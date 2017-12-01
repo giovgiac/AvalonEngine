@@ -9,7 +9,8 @@
 
 #include <Core/Object.h>
 
-// Windows COM
+// Windows Direct3D & COM
+#include <d3d11_2.h>
 #include <wrl.h>
 
 namespace Avalon {
@@ -28,7 +29,9 @@ namespace Avalon {
 	 */
 	class AD3DRenderer : public AObject {
 	private:
-
+		Microsoft::WRL::ComPtr<ID3D11Device1> Device;
+		Microsoft::WRL::ComPtr<ID3D11DeviceContext1> DeviceContext;
+		Microsoft::WRL::ComPtr<IDXGISwapChain1> Swapchain;
 
 	public:
 		/**
@@ -52,6 +55,9 @@ namespace Avalon {
 		 * @param const TArray<uint32>& Arrays: The vertex arrays of the objects.
 		 *
 		 */
-		void Render(const class AScene* InScene, const TArray<struct SRenderable*> InRenderables);
+		void Render(const class AScene* InScene, const TArray<SRenderable*> InRenderables);
+
+	private:
+
 	};
 }

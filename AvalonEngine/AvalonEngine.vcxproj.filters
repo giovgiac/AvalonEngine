@@ -15,35 +15,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Shaders\Default.vert" />
-    <None Include="Shaders\Default.frag" />
-    <None Include="Binaries\ThirdParty\FreeImage\x64\FreeImage.dll" />
-    <None Include="Binaries\ThirdParty\FreeImage\Win32\FreeImage.dll" />
-    <None Include="Binaries\ThirdParty\FMOD\Win32\fmod.dll" />
-    <None Include="Binaries\ThirdParty\FMOD\x64\fmod64.dll" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="Source\ThirdParty\FreeImage\FreeImage.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\ThirdParty\OpenGL\GL\eglew.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\ThirdParty\OpenGL\GL\glew.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\ThirdParty\OpenGL\GL\glxew.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\ThirdParty\OpenGL\GL\wglew.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\ThirdParty\OpenGL\GLFW\glfw3.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\ThirdParty\OpenGL\GLFW\glfw3native.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Runtime\Utils\File.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -54,9 +25,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Source\Runtime\Graphics\Texture.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Runtime\Graphics\GameObject.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Source\Runtime\Graphics\Camera.h">
@@ -72,33 +40,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Source\Runtime\Core\Event.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\ThirdParty\FMOD\fmod.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\ThirdParty\FMOD\fmod.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\ThirdParty\FMOD\fmod_codec.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\ThirdParty\FMOD\fmod_common.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\ThirdParty\FMOD\fmod_dsp.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\ThirdParty\FMOD\fmod_dsp_effects.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\ThirdParty\FMOD\fmod_errors.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\ThirdParty\FMOD\fmod_output.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Runtime\Audio\Source.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Source\Runtime\Core\Timer.h">
@@ -145,23 +86,10 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Library Include="Binaries\ThirdParty\FreeImage\x64\FreeImage.lib" />
-    <Library Include="Binaries\ThirdParty\OpenGL\Win32\glew32.lib" />
-    <Library Include="Binaries\ThirdParty\OpenGL\x64\glfw3.lib" />
-    <Library Include="Binaries\ThirdParty\OpenGL\x64\glew32.lib" />
-    <Library Include="Binaries\ThirdParty\OpenGL\Win32\glfw3.lib" />
-    <Library Include="Binaries\ThirdParty\FreeImage\Win32\FreeImage.lib" />
-    <Library Include="Binaries\ThirdParty\FMOD\Win32\fmod_vc.lib" />
-    <Library Include="Binaries\ThirdParty\FMOD\x64\fmod64_vc.lib" />
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="Source\Runtime\Utils\File.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\Runtime\Graphics\Texture.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Runtime\Graphics\GameObject.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\Runtime\Graphics\Camera.cpp">
@@ -177,9 +105,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\Runtime\Main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Runtime\Audio\Source.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Source\Runtime\Core\Timer.cpp">

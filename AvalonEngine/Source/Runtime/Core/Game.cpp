@@ -13,6 +13,7 @@
 #include <Core/World.h>
 
 #include <iostream>
+#include <thread>
 
 namespace Avalon 
 {
@@ -43,6 +44,7 @@ namespace Avalon
 	void AGame::Play(void)
 	{
 		static ATimer* Timer = new ATimer;
+		static float Elapsed = 0.0f;
 
 		BeforePlay();
 
@@ -54,6 +56,14 @@ namespace Avalon
 		{
 			World->Draw();
 			Timer->Tick();
+
+			// Print FPS every 1 second
+			if (Timer->GetElapsedTime() > Elapsed + 1.0f)
+			{
+				std::cout << "FPS: " << 1.0f / Timer->GetDeltaTime() << std::endl;
+				Elapsed += 1.0f;
+			}
+
 			Window->PollMessages();
 		}
 	}
