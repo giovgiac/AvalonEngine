@@ -26,8 +26,6 @@ namespace Avalon
 
 	void AGame::Start(void)
 	{
-		// TODO: Initialize Game Stuff
-
 		// Create Windows
 		Window = new AWindow(DefaultWindowWidth, DefaultWindowHeight, DefaultWindowTitle, DefaultWindowFullscreen);
 		Window->Start();

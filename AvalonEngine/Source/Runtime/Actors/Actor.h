@@ -18,9 +18,6 @@ namespace Avalon
 		STransform Transform;
 		class AWorld* World;
 
-	private:
-		virtual void ConstructObject(void);
-
 	protected:
 		class AWorld* GetWorld(void) const;
 
@@ -31,7 +28,11 @@ namespace Avalon
 
 		virtual void Start(void);
 
-		virtual void Tick(float DeltaTime);
+		virtual void Tick(float InDeltaTime);
+
+		void SetTransform(STransform InTransform);
+
+		void SetWorld(AWorld* InWorld);
 
 		template<typename T>
 		TArray<T*> GetComponentsByClass(void)

@@ -8,10 +8,16 @@
 #include "Renderer.h"
 
 #include <Actors/Actor.h>
+
 #include <Components/PrimitiveComponent.h>
 #include <Components/SpriteComponent.h>
 
-namespace Avalon {
+#include <Core/Window.h>
+
+#include <Windows.h>
+
+namespace Avalon 
+{
 	AD3DRenderer::AD3DRenderer(void)
 	{
 		
@@ -24,6 +30,7 @@ namespace Avalon {
 
 	void AD3DRenderer::Start(void)
 	{
+		HWND Handle = static_cast<HWND>(GetWindow()->GetHandle());
 
 	}
 

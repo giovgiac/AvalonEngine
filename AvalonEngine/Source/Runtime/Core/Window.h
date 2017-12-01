@@ -56,6 +56,8 @@ namespace Avalon
 
 		bool GetShouldClose(void) const;
 
+		void* GetHandle(void) const;
+
 		/**
 		 * AWindow GetWidth
 		 *
@@ -76,4 +78,6 @@ namespace Avalon
 		 */
 		uint32 GetHeight(void) const;
 	};
+
+	extern AWindow* GetWindow(void);
 }

@@ -1,5 +1,5 @@
 # Avalon Engine
-The Avalon Engine is Game Engine being developed by Giovgiac. The Engine has basic graphics, audio and font rendering capabilities.
+The Avalon Engine is a Game Engine being developed by Giovgiac. The Engine has basic graphics, audio and font rendering capabilities.
 
 ### Example Code
 ```cpp
@@ -23,12 +23,6 @@ using namespace Avalon;
 class MyGame : public AGame 
 {
 public:
-	MyGame(void)
-		: AGame() 
-	{
-	
-	}
-
 	void BeforePlay(void) override 
 	{
 		AScene* Scene = new AScene;
@@ -47,11 +41,14 @@ public:
 	}
 };
 
-int main(void) {
-	MyGame Game;
+int main(void)
+{
+	MyGame* Game = new MyGame;
 
-	Game.Start();
-	Game.Play();
-	Game.Destroy();
+	Game->Start();
+	Game->Play();
+	Game->Destroy();
+
+	return EXIT_SUCCESS;
 }
 ```

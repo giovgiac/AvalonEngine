@@ -9,6 +9,9 @@
 
 #include <Windows.h>
 
+// Pointer to Main Window
+static Avalon::AWindow* MainWindow = nullptr;
+
 LRESULT CALLBACK WindowProcedure(HWND InHWND, UINT InMSG, WPARAM InWPARAM, LPARAM InLPARAM)
 {
 	switch (InMSG)
@@ -21,17 +24,24 @@ LRESULT CALLBACK WindowProcedure(HWND InHWND, UINT InMSG, WPARAM InWPARAM, LPARA
 	return DefWindowProc(InHWND, InMSG, InWPARAM, InLPARAM);
 }
 
-namespace Avalon 
+namespace Avalon
 {
 	AWindow::AWindow(const uint32 InWidth, const uint32 InHeight, const utf8* InTitle, const bool InFullscreen)
-		: 
+		:
 		Width(InWidth),
 		Height(InHeight),
 		bFullscreen(InFullscreen),
 		bShouldClose(false),
-		Title(_strdup(InTitle)) 
+		Title(_strdup(InTitle))
 	{
-		
+		if (MainWindow)
+		{
+			MainWindow->Destroy();
+		}
+		else
+		{
+			MainWindow = this;
+		}
 	}
 
 	void AWindow::Destroy(void)
@@ -107,6 +117,11 @@ namespace Avalon
 		return bShouldClose;
 	}
 
+	void* AWindow::GetHandle(void) const
+	{
+		return Handle;
+	}
+
 	uint32 AWindow::GetWidth(void) const
 	{
 		return Width;
@@ -115,5 +130,10 @@ namespace Avalon
 	uint32 AWindow::GetHeight(void) const
 	{
 		return Height;
+	}
+
+	AWindow* GetWindow(void)
+	{
+		return MainWindow;
 	}
 }

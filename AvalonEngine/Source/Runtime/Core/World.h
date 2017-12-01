@@ -66,7 +66,7 @@ namespace Avalon
 		 */
 		void UnloadScene(void);
 
-		TArray<class AActor*> GetActors() const;
+		TArray<class AActor*> GetActors(void) const;
 
 		/**
 		 * AWorld GetScene
@@ -79,13 +79,14 @@ namespace Avalon
 		class AScene* GetScene() const;
 
 		template<typename T>
-		T* SpawnActor(STransform Transform)
+		T* SpawnActor(STransform InTransform)
 		{
 			AActor* Actor = Cast<AActor>(new T());
 
 			if (Actor)
 			{
-				// Set Transform
+				Actor->SetTransform(InTransform);
+				Actor->SetWorld(this);
 
 				AddActor(Actor);
 				return Actor;

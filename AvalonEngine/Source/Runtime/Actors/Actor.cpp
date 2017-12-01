@@ -45,14 +45,19 @@ namespace Avalon
 
 	}
 
-	void AActor::Tick(float DeltaTime)
+	void AActor::Tick(float InDeltaTime)
 	{
 
 	}
 
-	void AActor::ConstructObject(void)
+	void AActor::SetTransform(STransform InTransform)
 	{
-		
+		Transform = InTransform;
+	}
+
+	void AActor::SetWorld(AWorld* InWorld)
+	{
+		World = InWorld;
 	}
 
 	AWorld* AActor::GetWorld(void) const
