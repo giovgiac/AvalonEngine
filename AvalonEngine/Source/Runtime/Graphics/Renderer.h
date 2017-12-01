@@ -9,6 +9,9 @@
 
 #include <Core/Object.h>
 
+// Windows COM
+#include <wrl.h>
+
 namespace Avalon {
 	struct SRenderable
 	{

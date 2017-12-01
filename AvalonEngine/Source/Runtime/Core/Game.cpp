@@ -8,8 +8,11 @@
 #include "Game.h"
 
 #include <Core/Config.h>
+#include <Core/Timer.h>
 #include <Core/Window.h>
 #include <Core/World.h>
+
+#include <iostream>
 
 namespace Avalon 
 {
@@ -39,12 +42,18 @@ namespace Avalon
 
 	void AGame::Play(void)
 	{
+		static ATimer* Timer = new ATimer;
+
 		BeforePlay();
+
+		// Reset Timer
+		Timer->Reset();
 
 		// Main Game Loop
 		while (Window->GetShouldClose() == false)
 		{
 			World->Draw();
+			Timer->Tick();
 			Window->PollMessages();
 		}
 	}

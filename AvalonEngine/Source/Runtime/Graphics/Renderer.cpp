@@ -14,8 +14,6 @@
 
 #include <Core/Window.h>
 
-#include <Windows.h>
-
 namespace Avalon 
 {
 	AD3DRenderer::AD3DRenderer(void)
@@ -31,7 +29,7 @@ namespace Avalon
 	void AD3DRenderer::Start(void)
 	{
 		HWND Handle = static_cast<HWND>(GetWindow()->GetHandle());
-
+		
 	}
 
 	void AD3DRenderer::Render(const class AScene* InScene, const TArray<struct SRenderable*> InRenderables)

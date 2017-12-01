@@ -9,6 +9,8 @@
 
 #include <Core/Object.h>
 
+#include <chrono>
+
 namespace Avalon 
 {
 	/**
@@ -21,14 +23,13 @@ namespace Avalon
 	class ATimer : public AObject
 	{
 	private:
-		double SecsPerCount;
+		bool bStopped;
 		double DeltaTime;
-		uint64 BaseTime;
-		uint64 CurrentTime;
-		uint64 PausedTime;
-		uint64 PreviousTime;
-		uint64 StopTime;
-		bool Stopped;
+		std::chrono::time_point<std::chrono::high_resolution_clock> BaseTime;
+		std::chrono::time_point<std::chrono::high_resolution_clock> CurrentTime;
+		std::chrono::time_point<std::chrono::high_resolution_clock> PausedTime;
+		std::chrono::time_point<std::chrono::high_resolution_clock> PreviousTime;
+		std::chrono::time_point<std::chrono::high_resolution_clock> StopTime;
 
 	public:
 		/**
@@ -95,6 +96,6 @@ namespace Avalon
 		 * @return float: A float with the delta time in seconds.
 		 *
 		 */
-		inline float GetDeltaTime(void) const { return (float)DeltaTime; }
+		float GetDeltaTime(void) const;
 	};
 }

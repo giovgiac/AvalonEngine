@@ -7,71 +7,73 @@
 
 #include "Timer.h"
 
-#include <time.h>
-
-namespace Avalon 
+namespace Avalon
 {
 	ATimer::ATimer(void)
-		: BaseTime(0), CurrentTime(0), DeltaTime(-1.0), PausedTime(0), PreviousTime(0), StopTime(0), Stopped(false)
+		:
+		BaseTime(std::chrono::high_resolution_clock::time_point(std::chrono::high_resolution_clock::duration::zero())),
+		CurrentTime(std::chrono::high_resolution_clock::time_point(std::chrono::high_resolution_clock::duration::zero())),
+		PausedTime(std::chrono::high_resolution_clock::time_point(std::chrono::high_resolution_clock::duration::zero())),
+		PreviousTime(std::chrono::high_resolution_clock::time_point(std::chrono::high_resolution_clock::duration::zero())),
+		StopTime(std::chrono::high_resolution_clock::time_point(std::chrono::high_resolution_clock::duration::zero())),
+		DeltaTime(-1.0),
+		bStopped(false)
 	{
-		uint64 CountsPerSec = CLOCKS_PER_SEC;
 
-		// Calculate Period
-		SecsPerCount = 1.0 / (double)CountsPerSec;
 	}
 
 	void ATimer::Reset(void) {
 		// Get Current Time
-		CurrentTime = clock();
-
+		CurrentTime = std::chrono::high_resolution_clock::now();
+		
 		// Set Times
 		BaseTime = CurrentTime;
 		PreviousTime = CurrentTime;
-		StopTime = 0;
-		Stopped = false;
+		StopTime = std::chrono::high_resolution_clock::time_point(std::chrono::high_resolution_clock::duration::zero());
+		bStopped = false;
 	}
 
 	void ATimer::Start(void) {
-		uint64 StartTime;
+		std::chrono::time_point<std::chrono::high_resolution_clock> StartTime;
 
 		// Get Current Time
-		StartTime = clock();
+		StartTime = std::chrono::high_resolution_clock::now();
 
-		if (Stopped) {
+		if (bStopped) {
 			// Set Paused Time
 			PausedTime += StartTime - StopTime;
 
 			// Set Previous Time
 			PreviousTime = StartTime;
 
-			// Reset Stop Time and Stopped
-			StopTime = 0;
-			Stopped = false;
+			// Reset Stop Time and bStopped
+			StopTime = std::chrono::high_resolution_clock::time_point(std::chrono::high_resolution_clock::duration::zero());
+			bStopped = false;
 		}
 	}
 
 	void ATimer::Stop(void) {
-		if (!Stopped) {
+		if (!bStopped) {
 			// Get Current Time
-			CurrentTime = clock();
+			CurrentTime = std::chrono::high_resolution_clock::now();
 
-			// Set Stop Time and Stopped
+			// Set Stop Time and bStopped
 			StopTime = CurrentTime;
-			Stopped = true;
+			bStopped = true;
 		}
 	}
 
 	void ATimer::Tick(void) {
-		if (Stopped) {
+		if (bStopped) {
 			DeltaTime = 0.0;
 			return;
 		}
 
 		// Get Current Time
-		CurrentTime = clock();
+		CurrentTime = std::chrono::high_resolution_clock::now();
 
 		// Compute Delta Time
-		DeltaTime = (CurrentTime - PreviousTime) * SecsPerCount;
+		DeltaTime = std::chrono::duration_cast<std::chrono::nanoseconds>(CurrentTime - PreviousTime).count() / 10e8;
 
 		// Set Previous Time
 		PreviousTime = CurrentTime;
@@ -81,10 +83,15 @@ namespace Avalon
 			DeltaTime = 0.0;
 	}
 
+	float ATimer::GetDeltaTime(void) const
+	{
+		return (float)DeltaTime;
+	}
+
 	float ATimer::GetElapsedTime(void) const {
-		if (Stopped)
-			return (float)(((StopTime - PausedTime) - BaseTime) * SecsPerCount);
+		if (bStopped)
+			return (float)(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::time_point(StopTime - PausedTime) - BaseTime).count() / 10e8);
 		else
-			return (float)(((CurrentTime - PausedTime) - BaseTime) * SecsPerCount);
+			return (float)(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::time_point(CurrentTime - PausedTime) - BaseTime).count() / 10e8);
 	}
 }
