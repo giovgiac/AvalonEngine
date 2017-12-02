@@ -19,7 +19,7 @@ namespace Avalon
 		Top(0.0f),
 		Near(DefaultCameraNear),
 		Far(DefaultCameraFar),
-		Eye(0.0f, 0.0f, 2.0f),
+		Eye(0.0f, 0.0f, -0.5f),
 		Focus(0.0f, 0.0f, 0.0f),
 		Up(0.0f, 1.0f, 0.0f)
 	{
@@ -34,7 +34,7 @@ namespace Avalon
 		Top(InTop / 2.0f),
 		Near(DefaultCameraNear),
 		Far(DefaultCameraFar),
-		Eye(0.0f, 0.0f, 2.0f),
+		Eye(0.0f, 0.0f, -0.5f),
 		Focus(0.0f, 0.0f, 0.0f),
 		Up(0.0f, 1.0f, 0.0f)
 	{
@@ -49,7 +49,7 @@ namespace Avalon
 		Top(InTop),
 		Near(InNear),
 		Far(InFar),
-		Eye(0.0f, 0.0f, 2.0f),
+		Eye(0.0f, 0.0f, -0.5f),
 		Focus(0.0f, 0.0f, 0.0f),
 		Up(0.0f, 1.0f, 0.0f)
 	{

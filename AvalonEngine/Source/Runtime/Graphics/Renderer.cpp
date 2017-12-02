@@ -37,6 +37,7 @@ namespace Avalon
 		InitializeDirect3D();
 		InitalizeSwapchain();
 		InitializeRenderTarget();
+		InitializeTransformBuffer();
 		UpdateViewport();
 	}
 
@@ -98,6 +99,16 @@ namespace Avalon
 		Device->CreateRenderTargetView(BackBuffer.Get(), nullptr, &RenderTarget);
 	}
 
+	void AD3DRenderer::InitializeTransformBuffer(void)
+	{
+		D3D11_BUFFER_DESC BufferDesc = { 0 };
+		BufferDesc.ByteWidth = sizeof(XMMATRIX);
+		BufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+
+		Device->CreateBuffer(&BufferDesc, nullptr, &TransformBuffer);
+		DeviceContext->VSSetConstantBuffers(0, 1, TransformBuffer.GetAddressOf());
+	}
+
 	void AD3DRenderer::UpdateViewport()
 	{
 		D3D11_VIEWPORT Viewport = { 0 };
@@ -143,7 +154,7 @@ namespace Avalon
 			D3D11_INPUT_ELEMENT_DESC InputElementDesc[] =
 			{
 				{ "POSITION", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-				{ "COLOR", 0, DXGI_FORMAT_R8G8B8A8_UNORM, 0, 8, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+				{ "COLOR", 0, DXGI_FORMAT_B8G8R8A8_UNORM, 0, 8, D3D11_INPUT_PER_VERTEX_DATA, 0 },
 				{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 }
 			};
 			Device->CreateInputLayout(
@@ -172,11 +183,14 @@ namespace Avalon
 		// Get Matrices From Camera
 		XMMATRIX ViewMatrix = Camera->GetView();
 		XMMATRIX ProjectionMatrix = Camera->GetProjection();
-
+		
 		for (APrimitiveComponent* Component : InComponents)
 		{
 			uint32 Stride = sizeof(SVertex);
 			uint32 Offset = 0;
+
+			// Get Component Transform
+			STransform Transform = Component->GetComponentTransform();
 
 			if (Component->GetMaterial())
 			{
@@ -188,10 +202,20 @@ namespace Avalon
 
 			// Bind Buffers
 			DeviceContext->IASetVertexBuffers(0, 1, Component->GetVertexBufferAddressOf(), &Stride, &Offset);
+
+			// Update Transform
+			XMMATRIX TranslateMatrix = XMMatrixTranslation(Transform.Position.x, Transform.Position.y, 0.0f);
+			XMMATRIX RotateMatrix = XMMatrixRotationZ(Transform.Rotation);
+			XMMATRIX ScaleMatrix = XMMatrixScaling(Transform.Scale.x, Transform.Scale.y, 1.0f);
+			XMMATRIX WorldMatrix = TranslateMatrix * RotateMatrix * ScaleMatrix;
+			XMMATRIX TransformMatrix = ProjectionMatrix * ViewMatrix * WorldMatrix;
+
+			// Update Transform Buffer
+			DeviceContext->UpdateSubresource(TransformBuffer.Get(), 0, 0, &TransformMatrix, 0, 0);
 			
 			// Draw
 			DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-			DeviceContext->Draw(Component->GetVertices().size(), 0);
+			DeviceContext->Draw(static_cast<uint32>(Component->GetVertices().size()), 0);
 		}
 
 		Swapchain->Present(0, 0);

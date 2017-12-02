@@ -1,4 +1,11 @@
-float4 main() : SV_TARGET
+/**
+ * DefaultPixel.hlsl
+ *
+ * Copyright (c) Giovanni Giacomo. All Rights Reserved.
+ *
+ */
+
+float4 main(float4 Position : SV_POSITION, float4 Color : COLOR) : SV_TARGET
 {
-	return float4(1.0f, 1.0f, 1.0f, 1.0f);
+	return Color;
 }

@@ -27,6 +27,7 @@ namespace Avalon {
 		Microsoft::WRL::ComPtr<ID3D11RenderTargetView> RenderTarget;
 		Microsoft::WRL::ComPtr<IDXGIFactory2> Factory;
 		Microsoft::WRL::ComPtr<IDXGISwapChain1> Swapchain;
+		Microsoft::WRL::ComPtr<ID3D11Buffer> TransformBuffer;
 
 	public:
 		/**
@@ -54,14 +55,15 @@ namespace Avalon {
 		 */
 		void Render(const class AScene* InScene, const TArray<class APrimitiveComponent*>& InComponents);
 
-		void UpdateViewport();
+		void UpdateViewport(void);
 
 	private:
-		void InitializeDirect3D();
+		void InitializeDirect3D(void);
 
-		void InitalizeSwapchain();
+		void InitalizeSwapchain(void);
 
-		void InitializeRenderTarget();
+		void InitializeRenderTarget(void);
 
+		void InitializeTransformBuffer(void);
 	};
 }
