@@ -16,6 +16,15 @@ namespace Avalon
 		Material = InMaterial;
 	}
 
+	void APrimitiveComponent::Destroy(void)
+	{
+		if (Material)
+		{
+			Material->Destroy();
+			delete Material;
+		}
+	}
+
 	void APrimitiveComponent::UpdateDimensions(void)
 	{
 

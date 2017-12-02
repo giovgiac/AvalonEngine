@@ -14,7 +14,7 @@ namespace Avalon
 	class AObject
 	{
 	private:
-		utf8* Name;
+		const utf8* Name;
 
 	private:
 		virtual void ConstructObject(void);
@@ -33,6 +33,7 @@ namespace Avalon
 
 			AObject* Object = Cast<AObject>(Result);
 			Object->ConstructObject();
+			Object->Name = InName;
 
 			return Result;
 		}

@@ -46,17 +46,20 @@ namespace Avalon
 		Renderer->Start();
 	}
 
+	void AWorld::Resize(void)
+	{
+		Renderer->Resize();
+	}
+
 	void AWorld::LoadScene(AScene* InScene)
 	{
 		if (Scene)
 		{
 			UnloadScene();
 		}
-		else
-		{
-			Scene = InScene;
-			Scene->Start();
-		}
+
+		Scene = InScene;
+		Scene->Start();
 
 		for (AActor* Actor : InScene->GetActors())
 		{
@@ -66,8 +69,13 @@ namespace Avalon
 
 	void AWorld::UnloadScene(void) 
 	{
+		// Destroy Scene
 		Scene->Destroy();
 		delete Scene;
+
+		// Clear Actors & Primitives
+		Actors.clear();
+		PrimitiveComponents.clear();
 	}
 
 	void AWorld::AddActor(AActor* InActor)

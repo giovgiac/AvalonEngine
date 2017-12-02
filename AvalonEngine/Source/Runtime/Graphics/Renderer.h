@@ -57,12 +57,14 @@ namespace Avalon {
 		 */
 		void Render(const class AScene* InScene, const TArray<class APrimitiveComponent*>& InComponents);
 
+		void Resize(void);
+
 		void UpdateViewport(void);
 
 	private:
 		void InitializeDirect3D(void);
 
-		void InitalizeSwapchain(void);
+		void InitializeSwapchain(void);
 
 		void InitializeRenderTarget(void);
 

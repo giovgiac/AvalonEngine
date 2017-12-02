@@ -224,6 +224,9 @@
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Source\Editor\Controls\Textbox.h" />
+    <ClInclude Include="Source\Editor\Controls\Viewport.h" />
+    <ClInclude Include="Source\Editor\Core\Control.h" />
     <ClInclude Include="Source\Editor\Core\MainEditor.h" />
     <ClInclude Include="Source\Runtime\Actors\Character.h" />
     <ClInclude Include="Source\Runtime\Actors\Pawn.h" />
@@ -253,6 +256,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Source\Editor\Controls\Textbox.cpp" />
+    <ClCompile Include="Source\Editor\Controls\Viewport.cpp" />
+    <ClCompile Include="Source\Editor\Core\Control.cpp" />
     <ClCompile Include="Source\Editor\Core\MainEditor.cpp" />
     <ClCompile Include="Source\Runtime\Actors\Character.cpp" />
     <ClCompile Include="Source\Runtime\Actors\Pawn.cpp" />

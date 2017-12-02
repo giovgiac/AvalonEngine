@@ -46,6 +46,8 @@ namespace Avalon
 
 		void Start(void);
 
+		void Resize(void);
+
 		/**
 		 * AWorld LoadScene
 		 *

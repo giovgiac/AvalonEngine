@@ -9,6 +9,7 @@
 
 #include <Actors/Actor.h>
 
+#include <Core/Timer.h>
 #include <Core/Window.h>
 #include <Core/World.h>
 
@@ -16,7 +17,10 @@
 #include <Graphics/Scene.h>
 #include <Graphics/Texture.h>
 
-static Avalon::AMainEditor* MainEditor = nullptr;
+#include <Editor/Controls/Textbox.h>
+#include <Editor/Controls/Viewport.h>
+
+static Avalon::UMainEditor* MainEditor = nullptr;
 
 LRESULT CALLBACK WinProcedure(HWND InHWND, UINT InMSG, WPARAM InWPARAM, LPARAM InLPARAM)
 {
@@ -32,13 +36,15 @@ LRESULT CALLBACK WinProcedure(HWND InHWND, UINT InMSG, WPARAM InWPARAM, LPARAM I
 
 namespace Avalon
 {
-	AMainEditor::AMainEditor(const uint32 InWidth, const uint32 InHeight, const utf8* InTitle)
+	UMainEditor::UMainEditor(const float InWidth, const float InHeight, const utf8* InTitle)
 		:
-		Width(InWidth),
-		Height(InHeight),
 		bShouldClose(false),
+		bResizing(false),
 		Title(_strdup(InTitle))
 	{
+		Width = InWidth;
+		Height = InHeight;
+
 		if (MainEditor)
 		{
 			MainEditor->Destroy();
@@ -49,7 +55,21 @@ namespace Avalon
 		}
 	}
 
-	void AMainEditor::AddMenus(HWND InHWND)
+	void UMainEditor::AddControls(HWND InHWND)
+	{
+		//Viewport = CreateWindow(WC_DIALOG, "Viewport", WS_BORDER | WS_VISIBLE | WS_CHILD, 320, 96, ViewportWidth, ViewportHeight, InHWND, 0, 0, 0);
+		//CreateWindow(WC_STATIC, "Enter Text Here: ", WS_VISIBLE | WS_CHILD | SS_CENTER, 200, 25, 100, 50, InHWND, 0, 0, 0);
+
+		Viewport = new UViewport(this, 0.5f, 0.5f, 640.0f, 480.0f, EAnchorPoint::CENTER);
+		Viewport->ConstructControl(InHWND);
+		Children.push_back(Viewport);
+
+		UTextbox* Textbox = new UTextbox(this, 0.0f, 0.0f, 100.0f, 20.0f, EAnchorPoint::TOP_LEFT);
+		Textbox->ConstructControl(InHWND);
+		Children.push_back(Textbox);
+	}
+
+	void UMainEditor::AddMenus(HWND InHWND)
 	{
 		HMENU PackageMenu = CreateMenu();
 
@@ -58,7 +78,7 @@ namespace Avalon
 		AppendMenu(PackageMenu, MF_STRING, static_cast<UINT_PTR>(EEditorMenu::PACKAGE_MENU_WINDOWS_64_BIT), "Windows (64-bit)");
 
 		HMENU FileMenu = CreateMenu();
-
+		
 		// Add Items To FileMenu
 		AppendMenu(FileMenu, MF_STRING, static_cast<UINT_PTR>(EEditorMenu::FILE_MENU_NEW_SCENE), "New Scene...");
 		AppendMenu(FileMenu, MF_STRING, static_cast<UINT_PTR>(EEditorMenu::FILE_MENU_OPEN_SCENE), "Open Scene...");
@@ -107,29 +127,67 @@ namespace Avalon
 		SetMenu(InHWND, Menu);
 	}
 
-	void AMainEditor::ProcessMenus(WPARAM InWPARAM)
+	void UMainEditor::ProcessMenus(WPARAM InWPARAM)
 	{
+		AScene* NewScene = nullptr;
+		ATexture2D* GokuTexture1 = nullptr;
+		AMaterial* TestMaterial1 = nullptr;
+		AActor* TestActor1 = nullptr;
+
 		switch (static_cast<EEditorMenu>(InWPARAM))
 		{
+		case EEditorMenu::FILE_MENU_NEW_SCENE:
+			// Create New Scene
+			NewScene = new AScene;
+			World->LoadScene(NewScene);
+			
+			break;
+		case EEditorMenu::FILE_MENU_OPEN_SCENE:
+			// Create Test Scene
+			NewScene = new AScene;
+
+			// Create Textures
+			GokuTexture1 = new ATexture2D("goku.png");
+
+			// Create Materials
+			TestMaterial1 = new AMaterial();
+			TestMaterial1->SetDiffuse(GokuTexture1);
+
+			// Create Actors
+			TestActor1 = new AActor(XMFLOAT2(000.0f, 000.0f), TestMaterial1);
+
+			// Add To Scene
+			NewScene->AddActor(TestActor1);
+
+			// Load Scene
+			World->LoadScene(NewScene);
+			break;
 		case EEditorMenu::FILE_MENU_EXIT:
 			bShouldClose = true;
 			break;
 		}
 	}
 
-	void AMainEditor::Destroy(void)
+	void UMainEditor::Destroy(void)
 	{
-		DestroyWindow(static_cast<HWND>(Handle));
+		//DestroyWindow(static_cast<HWND>(Handle));
+		DestroyControl();
 		delete Title;
 	}
 
-	void AMainEditor::Start(void)
+	void UMainEditor::Start(void)
 	{
+		ConstructControl(nullptr);
+	}
+
+	void UMainEditor::ConstructControl(HWND InParentHandle)
+	{
+		InitializeTimer();
 		InitializeWindow();
 		InitializeWorld();
 	}
 
-	void AMainEditor::InitializeWindow(void)
+	void UMainEditor::InitializeWindow(void)
 	{
 		WNDCLASS WindowClass;
 		WindowClass.style = CS_HREDRAW | CS_VREDRAW;
@@ -149,7 +207,7 @@ namespace Avalon
 		}
 
 		Handle = CreateWindow(
-			WindowClass.lpszClassName,
+			"Avalon Window",
 			Title,
 			WS_OVERLAPPEDWINDOW,
 			CW_USEDEFAULT,
@@ -171,32 +229,19 @@ namespace Avalon
 		UpdateWindow(Handle);
 	}
 
-	void AMainEditor::InitializeWorld(void)
+	void UMainEditor::InitializeWorld(void)
 	{
 		World = new AWorld();
 		World->Start();
-
-		// Create Test Scene
-		AScene* Scene = new AScene;
-
-		// Create Textures
-		ATexture2D* GokuTexture1 = new ATexture2D("goku.png");
-
-		// Create Materials
-		AMaterial* TestMaterial1 = new AMaterial();
-		TestMaterial1->SetDiffuse(GokuTexture1);
-
-		// Create Actors
-		AActor* TestActor1 = new AActor(XMFLOAT2(000.0f, 000.0f), TestMaterial1);
-
-		// Add To Scene
-		Scene->AddActor(TestActor1);
-
-		// Load Scene
-		World->LoadScene(Scene);
 	}
 
-	void AMainEditor::PollMessages(void)
+	void UMainEditor::InitializeTimer(void)
+	{
+		Timer = new ATimer();
+		Timer->Start();
+	}
+
+	void UMainEditor::PollMessages(void)
 	{
 		MSG Message = { 0 };
 
@@ -212,56 +257,101 @@ namespace Avalon
 		}
 	}
 
-	void AMainEditor::Run(void)
+	void UMainEditor::Run(void)
 	{
+		Timer->Reset();
+
+		// Editor Loop
 		while (GetShouldClose() == false)
 		{
 			PollMessages();
-
-			// Editor Loop
+			Timer->Tick();
 			World->Draw();
 		}
 	}
 
-	LRESULT CALLBACK AMainEditor::WindowProcedure(HWND InHWND, UINT InMSG, WPARAM InWPARAM, LPARAM InLPARAM)
+	void UMainEditor::ResizeControls(void)
+	{
+		for (UControl* Control : Children)
+		{
+			Control->ResizeControl();
+		}
+
+		World->Resize();
+	}
+
+	LRESULT CALLBACK UMainEditor::WindowProcedure(HWND InHWND, UINT InMSG, WPARAM InWPARAM, LPARAM InLPARAM)
 	{
 		switch (InMSG)
 		{
+		case WM_ACTIVATE:
+			if (LOWORD(InWPARAM) == WA_INACTIVE)
+			{
+				Timer->Stop();
+			}
+			else
+			{
+				Timer->Start();
+			}
+
+			return EXIT_SUCCESS;
 		case WM_COMMAND:
 			ProcessMenus(InWPARAM);
-			break;
+			return EXIT_SUCCESS;
 		case WM_CREATE:
 			AddMenus(InHWND);
-			break;
+			AddControls(InHWND);
+			return EXIT_SUCCESS;
 		case WM_DESTROY:
 			PostQuitMessage(EXIT_SUCCESS);
+			return EXIT_SUCCESS;
+		case WM_SIZE:
+			Width = LOWORD(InLPARAM);
+			Height = HIWORD(InLPARAM);
+
+			if (World)
+			{
+				if (InWPARAM == SIZE_MAXIMIZED)
+				{
+					ResizeControls();
+				}
+				else if (InWPARAM == SIZE_RESTORED)
+				{
+					if (bResizing == false)
+					{
+						ResizeControls();
+					}
+				}
+			}
+
+			return EXIT_SUCCESS;
+		case WM_ENTERSIZEMOVE:
+			bResizing = true;
+
+			Timer->Stop();
+			return EXIT_SUCCESS;
+		case WM_EXITSIZEMOVE:
+			bResizing = false;
+
+			Timer->Start();
+			ResizeControls();
 			return EXIT_SUCCESS;
 		}
 
 		return DefWindowProc(InHWND, InMSG, InWPARAM, InLPARAM);
 	}
 
-	bool AMainEditor::GetShouldClose(void) const
+	bool UMainEditor::GetShouldClose(void) const
 	{
 		return bShouldClose;
 	}
 
-	HWND AMainEditor::GetHandle(void) const
+	UViewport* UMainEditor::GetViewport(void) const
 	{
-		return Handle;
+		return Viewport;
 	}
 
-	uint32 AMainEditor::GetWidth(void) const
-	{
-		return Width;
-	}
-
-	uint32 AMainEditor::GetHeight(void) const
-	{
-		return Height;
-	}
-
-	AMainEditor* GetMainEditor(void)
+	UMainEditor* GetMainEditor(void)
 	{
 		return MainEditor;
 	}

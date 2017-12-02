@@ -27,12 +27,13 @@
 
 // Editor Includes
 #include <Editor/Core/MainEditor.h>
+#include <Editor/Controls/Viewport.h>
 
-namespace Avalon 
+namespace Avalon
 {
 	AD3DRenderer::AD3DRenderer(void)
 	{
-		
+
 	}
 
 	void AD3DRenderer::Destroy(void)
@@ -41,9 +42,9 @@ namespace Avalon
 	}
 
 	void AD3DRenderer::Start(void)
-	{		
+	{
 		InitializeDirect3D();
-		InitalizeSwapchain();
+		InitializeSwapchain();
 		InitializeRenderTarget();
 		InitializeTransformBuffer();
 		InitializeStates();
@@ -80,7 +81,7 @@ namespace Avalon
 		DXGIAdapter->GetParent(IID_PPV_ARGS(&Factory));
 	}
 
-	void AD3DRenderer::InitalizeSwapchain()
+	void AD3DRenderer::InitializeSwapchain()
 	{
 		DXGI_SWAP_CHAIN_DESC1 SwapchainDesc = { 0 };
 		SwapchainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
@@ -96,7 +97,7 @@ namespace Avalon
 		}
 		else if (GetMainEditor())
 		{
-			Handle = GetMainEditor()->GetHandle();
+			Handle = GetMainEditor()->GetViewport()->GetHandle();
 		}
 
 		Factory->CreateSwapChainForHwnd(
@@ -176,8 +177,8 @@ namespace Avalon
 		}
 		else if (GetMainEditor())
 		{
-			Viewport.Width = static_cast<float>(GetMainEditor()->GetWidth());
-			Viewport.Height = static_cast<float>(GetMainEditor()->GetHeight());
+			Viewport.Width = GetMainEditor()->GetViewport()->GetWidth();
+			Viewport.Height = GetMainEditor()->GetViewport()->GetHeight();
 		}
 		else
 		{
@@ -186,6 +187,13 @@ namespace Avalon
 		}
 
 		DeviceContext->RSSetViewports(1, &Viewport);
+	}
+
+	void AD3DRenderer::Resize(void)
+	{
+		InitializeSwapchain();
+		InitializeRenderTarget();
+		UpdateViewport();
 	}
 
 	void AD3DRenderer::LoadPrimitiveComponent(APrimitiveComponent* InComponent)

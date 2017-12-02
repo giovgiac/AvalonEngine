@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include <Core/Object.h>
+#include <Editor/Core/Control.h>
 
 #include <Windows.h>
 
@@ -44,30 +44,32 @@ namespace Avalon
 	};
 
 	/**
-	 * AMainEditor Class
+	 * UMainEditor Class
 	 *
 	 * This class is responsible for creating windows using the GLFW library.
 	 *
 	 */
-	class AMainEditor : public AObject
+	class UMainEditor : public UControl
 	{
 	private:
 		// Window Settings
 		bool bShouldClose;
-		uint32 Width;
-		uint32 Height;
+		bool bResizing;
 		utf8* Title;
 
 		// Window Handles
-		HWND Handle;
 		HMENU Menu;
 
+		// Viewport Settings
+		class UViewport* Viewport;
+
 		// Runtime Objects
+		class ATimer* Timer;
 		class AWorld* World;
 
 	public:
 		/**
-		 * AMainEditor Constructor
+		 * UMainEditor Constructor
 		 *
 		 * This default constructor creates a window with the given width, height, title and whether is fullscreen.
 		 *
@@ -76,7 +78,7 @@ namespace Avalon
 		 * @param const utf8* InTitle: The title of the window.
 		 *
 		 */
-		explicit AMainEditor(const uint32 InWidth, const uint32 InHeight, const utf8* InTitle);
+		explicit UMainEditor(const float InWidth, const float InHeight, const utf8* InTitle);
 
 		void Start(void);
 
@@ -88,34 +90,22 @@ namespace Avalon
 
 		bool GetShouldClose(void) const;
 
-		HWND GetHandle(void) const;
+		class UViewport* GetViewport(void) const;
 
-		/**
-		 * AMainEditor GetWidth
-		 *
-		 * This method gets the window current width.
-		 *
-		 * @return uint32: The window width.
-		 *
-		 */
-		uint32 GetWidth(void) const;
-
-		/**
-		 * AMainEditor GetHeight
-		 *
-		 * This method gets the window current height.
-		 *
-		 * @return uint32: The window height.
-		 *
-		 */
-		uint32 GetHeight(void) const;
+		virtual void ConstructControl(HWND InParentHandle) override;
 
 	private:
+		void AddControls(HWND InHWND);
+
 		void AddMenus(HWND InHWND);
+
+		void ResizeControls(void);
 
 		void InitializeWindow(void);
 
 		void InitializeWorld(void);
+
+		void InitializeTimer(void);
 
 		void ProcessMenus(WPARAM InWPARAM);
 
@@ -123,5 +113,5 @@ namespace Avalon
 
 	};
 
-	extern AMainEditor* GetMainEditor(void);
+	extern UMainEditor* GetMainEditor(void);
 }
