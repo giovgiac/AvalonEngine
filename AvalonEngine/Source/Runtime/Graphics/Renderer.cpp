@@ -7,11 +7,13 @@
 
 #include "Renderer.h"
 
+// Runtime Includes
 #include <Actors/Actor.h>
 
 #include <Components/PrimitiveComponent.h>
 #include <Components/SpriteComponent.h>
 
+#include <Core/Config.h>
 #include <Core/Window.h>
 
 #include <Graphics/Camera.h>
@@ -22,6 +24,9 @@
 #include <Utils/File.h>
 
 #include <WICTextureLoader.h>
+
+// Editor Includes
+#include <Editor/Core/MainEditor.h>
 
 namespace Avalon 
 {
@@ -84,7 +89,16 @@ namespace Avalon
 		SwapchainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_SEQUENTIAL;
 		SwapchainDesc.SampleDesc.Count = 1;
 
-		HWND Handle = static_cast<HWND>(GetWindow()->GetHandle());
+		HWND Handle = nullptr;
+		if (GetWindow())
+		{
+			Handle = static_cast<HWND>(GetWindow()->GetHandle());
+		}
+		else if (GetMainEditor())
+		{
+			Handle = GetMainEditor()->GetHandle();
+		}
+
 		Factory->CreateSwapChainForHwnd(
 			Device.Get(),
 			Handle,
@@ -155,8 +169,21 @@ namespace Avalon
 		D3D11_VIEWPORT Viewport = { 0 };
 		Viewport.TopLeftX = 0.0f;
 		Viewport.TopLeftY = 0.0f;
-		Viewport.Width = static_cast<float>(GetWindow()->GetWidth());
-		Viewport.Height = static_cast<float>(GetWindow()->GetHeight());
+		if (GetWindow())
+		{
+			Viewport.Width = static_cast<float>(GetWindow()->GetWidth());
+			Viewport.Height = static_cast<float>(GetWindow()->GetHeight());
+		}
+		else if (GetMainEditor())
+		{
+			Viewport.Width = static_cast<float>(GetMainEditor()->GetWidth());
+			Viewport.Height = static_cast<float>(GetMainEditor()->GetHeight());
+		}
+		else
+		{
+			Viewport.Width = static_cast<float>(DefaultWindowWidth);
+			Viewport.Height = static_cast<float>(DefaultWindowHeight);
+		}
 
 		DeviceContext->RSSetViewports(1, &Viewport);
 	}
@@ -265,56 +292,58 @@ namespace Avalon
 
 	void AD3DRenderer::Render(const AScene* InScene, const TArray<APrimitiveComponent*>& InComponents)
 	{
-		TArray<AActor*> Actors = InScene->GetActors();
-		ACamera* Camera = InScene->GetCamera();
-		
 		// Clear Back Buffer
 		DeviceContext->OMSetRenderTargets(1, RenderTarget.GetAddressOf(), nullptr);
 		DeviceContext->ClearRenderTargetView(RenderTarget.Get(), Colors::DarkGray);
 
-		// Get Matrices From Camera
-		XMMATRIX ViewMatrix = Camera->GetView();
-		XMMATRIX ProjectionMatrix = Camera->GetProjection();
-		
-		for (APrimitiveComponent* Component : InComponents)
+		if (InScene)
 		{
-			uint32 Stride = sizeof(SVertex);
-			uint32 Offset = 0;
+			ACamera* Camera = InScene->GetCamera();
 
-			// Get Component Transform
-			STransform Transform = Component->GetComponentTransform();
+			// Get Matrices From Camera
+			XMMATRIX ViewMatrix = Camera->GetView();
+			XMMATRIX ProjectionMatrix = Camera->GetProjection();
 
-			if (Component->GetMaterial())
+			for (APrimitiveComponent* Component : InComponents)
 			{
-				// Bind Input Layout & Shaders
-				DeviceContext->IASetInputLayout(Component->GetMaterial()->GetInputLayout());
-				DeviceContext->VSSetShader(Component->GetMaterial()->GetVertexShader(), nullptr, 0);
-				DeviceContext->PSSetShader(Component->GetMaterial()->GetPixelShader(), nullptr, 0);
+				uint32 Stride = sizeof(SVertex);
+				uint32 Offset = 0;
+
+				// Get Component Transform
+				STransform Transform = Component->GetComponentTransform();
+
+				if (Component->GetMaterial())
+				{
+					// Bind Input Layout & Shaders
+					DeviceContext->IASetInputLayout(Component->GetMaterial()->GetInputLayout());
+					DeviceContext->VSSetShader(Component->GetMaterial()->GetVertexShader(), nullptr, 0);
+					DeviceContext->PSSetShader(Component->GetMaterial()->GetPixelShader(), nullptr, 0);
+				}
+
+				// Bind Buffers
+				DeviceContext->IASetVertexBuffers(0, 1, Component->GetVertexBufferAddressOf(), &Stride, &Offset);
+
+				// Update Transform
+				XMMATRIX TranslateMatrix = XMMatrixTranslation(Transform.Position.x, Transform.Position.y, 0.0f);
+				XMMATRIX RotateMatrix = XMMatrixRotationZ(Transform.Rotation);
+				XMMATRIX ScaleMatrix = XMMatrixScaling(Transform.Scale.x, Transform.Scale.y, 1.0f);
+				XMMATRIX WorldMatrix = ScaleMatrix * RotateMatrix * TranslateMatrix;
+				XMMATRIX TransformMatrix = WorldMatrix * ViewMatrix * ProjectionMatrix;
+
+				// Update Transform Buffer
+				DeviceContext->UpdateSubresource(TransformBuffer.Get(), 0, 0, &TransformMatrix, 0, 0);
+
+				// Send Diffuse Texture To Pixel Shader
+				DeviceContext->PSSetShaderResources(0, 1, Component->GetMaterial()->GetDiffuse()->GetTextureAddressOf());
+
+				// Set States
+				DeviceContext->PSSetSamplers(0, 1, SamplerState.GetAddressOf());
+				DeviceContext->OMSetBlendState(BlendState.Get(), 0, 0xFFFFFFFF);
+
+				// Draw
+				DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+				DeviceContext->Draw(static_cast<uint32>(Component->GetVertices().size()), 0);
 			}
-
-			// Bind Buffers
-			DeviceContext->IASetVertexBuffers(0, 1, Component->GetVertexBufferAddressOf(), &Stride, &Offset);
-
-			// Update Transform
-			XMMATRIX TranslateMatrix = XMMatrixTranslation(Transform.Position.x, Transform.Position.y, 0.0f);
-			XMMATRIX RotateMatrix = XMMatrixRotationZ(Transform.Rotation);
-			XMMATRIX ScaleMatrix = XMMatrixScaling(Transform.Scale.x, Transform.Scale.y, 1.0f);
-			XMMATRIX WorldMatrix = ScaleMatrix * RotateMatrix * TranslateMatrix;
-			XMMATRIX TransformMatrix = WorldMatrix * ViewMatrix * ProjectionMatrix;
-
-			// Update Transform Buffer
-			DeviceContext->UpdateSubresource(TransformBuffer.Get(), 0, 0, &TransformMatrix, 0, 0);
-
-			// Send Diffuse Texture To Pixel Shader
-			DeviceContext->PSSetShaderResources(0, 1, Component->GetMaterial()->GetDiffuse()->GetTextureAddressOf());
-
-			// Set States
-			DeviceContext->PSSetSamplers(0, 1, SamplerState.GetAddressOf());
-			DeviceContext->OMSetBlendState(BlendState.Get(), 0, 0xFFFFFFFF);
-			
-			// Draw
-			DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-			DeviceContext->Draw(static_cast<uint32>(Component->GetVertices().size()), 0);
 		}
 
 		Swapchain->Present(0, 0);

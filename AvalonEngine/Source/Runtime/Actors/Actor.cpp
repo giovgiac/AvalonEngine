@@ -63,7 +63,7 @@ namespace Avalon
 
 	void AActor::Tick(float InDeltaTime)
 	{
-		
+
 	}
 
 	void AActor::SetTransform(STransform InTransform)

@@ -74,28 +74,28 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <IntDir>$(SolutionDir)\Intermediate\$(Platform)\$(Configuration)\</IntDir>
     <OutDir>$(SolutionDir)\Binaries\$(ProjectName)\$(Platform)\$(Configuration)\</OutDir>
-    <IncludePath>$(SolutionDir)\Source\Runtime;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)\Source;$(SolutionDir)\Source\Runtime;$(IncludePath)</IncludePath>
     <ExecutablePath>$(ExecutablePath)</ExecutablePath>
     <LibraryPath>$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IntDir>$(SolutionDir)\Intermediate\$(Platform)\$(Configuration)\</IntDir>
     <OutDir>$(SolutionDir)\Binaries\$(ProjectName)\$(Platform)\$(Configuration)\</OutDir>
-    <IncludePath>$(SolutionDir)\Source\Runtime;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)\Source;$(SolutionDir)\Source\Runtime;$(IncludePath)</IncludePath>
     <ExecutablePath>$(ExecutablePath)</ExecutablePath>
     <LibraryPath>$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <IntDir>$(SolutionDir)\Intermediate\$(Platform)\$(Configuration)\</IntDir>
     <OutDir>$(SolutionDir)\Binaries\$(ProjectName)\$(Platform)\$(Configuration)\</OutDir>
-    <IncludePath>$(SolutionDir)\Source\Runtime;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)\Source;$(SolutionDir)\Source\Runtime;$(IncludePath)</IncludePath>
     <ExecutablePath>$(ExecutablePath)</ExecutablePath>
     <LibraryPath>$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <IntDir>$(SolutionDir)\Intermediate\$(Platform)\$(Configuration)\</IntDir>
     <OutDir>$(SolutionDir)\Binaries\$(ProjectName)\$(Platform)\$(Configuration)\</OutDir>
-    <IncludePath>$(SolutionDir)\Source\Runtime;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)\Source;$(SolutionDir)\Source\Runtime;$(IncludePath)</IncludePath>
     <ExecutablePath>$(ExecutablePath)</ExecutablePath>
     <LibraryPath>$(LibraryPath)</LibraryPath>
   </PropertyGroup>
@@ -224,6 +224,7 @@
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Source\Editor\Core\MainEditor.h" />
     <ClInclude Include="Source\Runtime\Actors\Character.h" />
     <ClInclude Include="Source\Runtime\Actors\Pawn.h" />
     <ClInclude Include="Source\Runtime\Components\PrimitiveComponent.h" />
@@ -252,6 +253,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Source\Editor\Core\MainEditor.cpp" />
     <ClCompile Include="Source\Runtime\Actors\Character.cpp" />
     <ClCompile Include="Source\Runtime\Actors\Pawn.cpp" />
     <ClCompile Include="Source\Runtime\Components\PrimitiveComponent.cpp" />
