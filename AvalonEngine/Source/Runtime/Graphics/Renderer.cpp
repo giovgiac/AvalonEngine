@@ -17,8 +17,11 @@
 #include <Graphics/Camera.h>
 #include <Graphics/Scene.h>
 #include <Graphics/Material.h>
+#include <Graphics/Texture.h>
 
 #include <Utils/File.h>
+
+#include <WICTextureLoader.h>
 
 namespace Avalon 
 {
@@ -38,6 +41,7 @@ namespace Avalon
 		InitalizeSwapchain();
 		InitializeRenderTarget();
 		InitializeTransformBuffer();
+		InitializeStates();
 		UpdateViewport();
 	}
 
@@ -109,6 +113,43 @@ namespace Avalon
 		DeviceContext->VSSetConstantBuffers(0, 1, TransformBuffer.GetAddressOf());
 	}
 
+	void AD3DRenderer::InitializeStates(void)
+	{
+		D3D11_BLEND_DESC BlendStateDesc;
+		BlendStateDesc.AlphaToCoverageEnable = false;
+		BlendStateDesc.IndependentBlendEnable = false;
+		
+		for (uint32 i = 0; i < 8; i++)
+		{
+			BlendStateDesc.RenderTarget[i].BlendEnable = true;
+			BlendStateDesc.RenderTarget[i].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+			BlendStateDesc.RenderTarget[i].SrcBlend = D3D11_BLEND_SRC_ALPHA;
+			BlendStateDesc.RenderTarget[i].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
+			BlendStateDesc.RenderTarget[i].SrcBlendAlpha = D3D11_BLEND_ZERO;
+			BlendStateDesc.RenderTarget[i].DestBlendAlpha = D3D11_BLEND_ZERO;
+			BlendStateDesc.RenderTarget[i].BlendOp = D3D11_BLEND_OP_ADD;
+			BlendStateDesc.RenderTarget[i].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+		}
+
+		Device->CreateBlendState(&BlendStateDesc, &BlendState);
+
+		D3D11_SAMPLER_DESC SamplerDesc;
+		SamplerDesc.Filter = D3D11_FILTER_ANISOTROPIC;
+		SamplerDesc.MaxAnisotropy = 16;
+		SamplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_CLAMP;
+		SamplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_CLAMP;
+		SamplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_CLAMP;
+		SamplerDesc.BorderColor[0] = 0.0f;
+		SamplerDesc.BorderColor[1] = 0.0f;
+		SamplerDesc.BorderColor[2] = 0.0f;
+		SamplerDesc.BorderColor[3] = 0.0f;
+		SamplerDesc.MinLOD = 0.0f;
+		SamplerDesc.MaxLOD = FLT_MAX;
+		SamplerDesc.MipLODBias = 0.0f;
+
+		Device->CreateSamplerState(&SamplerDesc, &SamplerState);
+	}
+
 	void AD3DRenderer::UpdateViewport()
 	{
 		D3D11_VIEWPORT Viewport = { 0 };
@@ -122,52 +163,103 @@ namespace Avalon
 
 	void AD3DRenderer::LoadPrimitiveComponent(APrimitiveComponent* InComponent)
 	{
-		// Create Vertex Buffer
-		D3D11_BUFFER_DESC BufferDesc = { 0 };
-		BufferDesc.ByteWidth = static_cast<uint32>(sizeof(SVertex) * InComponent->GetVertices().size());
-		BufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-
-		D3D11_SUBRESOURCE_DATA SubresourceData = { InComponent->GetVertices().data(), 0, 0 };
-		Device->CreateBuffer(&BufferDesc, &SubresourceData, InComponent->GetVertexBufferAddress());
-
 		if (InComponent->GetMaterial())
 		{
+			// Load Texture
+			if (InComponent->GetMaterial()->GetDiffuse())
+			{
+				if (InComponent->GetMaterial()->GetDiffuse()->GetTexture() == nullptr)
+				{
+					CreateWICTextureFromFile(
+						Device.Get(),
+						nullptr,
+						InComponent->GetMaterial()->GetDiffuse()->GetFilename(),
+						nullptr,
+						InComponent->GetMaterial()->GetDiffuse()->GetTextureAddress(),
+						0
+					);
+				}
+			}
+
+			// Shader Code Arrays
+			TArray<uint8>* PixelSource = nullptr;
+			TArray<uint8>* VertexSource = nullptr;
+
 			// Create Pixel Shader
-			TArray<uint8>* PixelSource = ReadShader(InComponent->GetMaterial()->GetPixelFilename());
-			Device->CreatePixelShader(
-				PixelSource->data(),
-				PixelSource->size(),
-				nullptr,
-				InComponent->GetMaterial()->GetPixelShaderAddress()
-			);
+			if (InComponent->GetMaterial()->GetPixelShader() == nullptr)
+			{
+				PixelSource = ReadShader(InComponent->GetMaterial()->GetPixelFilename());
+				
+				if (PixelSource)
+				{
+					Device->CreatePixelShader(
+						PixelSource->data(),
+						PixelSource->size(),
+						nullptr,
+						InComponent->GetMaterial()->GetPixelShaderAddress()
+					);
+				}
+			}
 
 			// Create Vertex Shader
-			TArray<uint8>* VertexSource = ReadShader(InComponent->GetMaterial()->GetVertexFilename());
-			Device->CreateVertexShader(
-				VertexSource->data(),
-				VertexSource->size(),
-				nullptr,
-				InComponent->GetMaterial()->GetVertexShaderAddress()
-			);
+			if (InComponent->GetMaterial()->GetVertexShader() == nullptr)
+			{
+				VertexSource = ReadShader(InComponent->GetMaterial()->GetVertexFilename());
+
+				if (VertexSource)
+				{
+					Device->CreateVertexShader(
+						VertexSource->data(),
+						VertexSource->size(),
+						nullptr,
+						InComponent->GetMaterial()->GetVertexShaderAddress()
+					);
+				}
+			}
 
 			// Create Input Layout
-			D3D11_INPUT_ELEMENT_DESC InputElementDesc[] =
+			if (InComponent->GetMaterial()->GetInputLayout() == nullptr)
 			{
-				{ "POSITION", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-				{ "COLOR", 0, DXGI_FORMAT_B8G8R8A8_UNORM, 0, 8, D3D11_INPUT_PER_VERTEX_DATA, 0 },
-				{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 }
-			};
-			Device->CreateInputLayout(
-				InputElementDesc,
-				ARRAYSIZE(InputElementDesc),
-				VertexSource->data(),
-				VertexSource->size(),
-				InComponent->GetMaterial()->GetInputLayoutAddress()
-			);
+				D3D11_INPUT_ELEMENT_DESC InputElementDesc[] =
+				{
+					{ "POSITION", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+					{ "COLOR", 0, DXGI_FORMAT_B8G8R8A8_UNORM, 0, 8, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+					{ "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 }
+				};
+
+				if (VertexSource)
+				{
+					Device->CreateInputLayout(
+						InputElementDesc,
+						ARRAYSIZE(InputElementDesc),
+						VertexSource->data(),
+						VertexSource->size(),
+						InComponent->GetMaterial()->GetInputLayoutAddress()
+					);
+				}
+			}
+
+			// Update Texture Width & Height
+			InComponent->UpdateDimensions();
+
+			// Create Vertex Buffer
+			D3D11_BUFFER_DESC BufferDesc = { 0 };
+			BufferDesc.ByteWidth = static_cast<uint32>(sizeof(SVertex) * InComponent->GetVertices().size());
+			BufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+
+			D3D11_SUBRESOURCE_DATA SubresourceData = { InComponent->GetVertices().data(), 0, 0 };
+			Device->CreateBuffer(&BufferDesc, &SubresourceData, InComponent->GetVertexBufferAddress());
 
 			// Cleanup Shader Sources
-			delete PixelSource;
-			delete VertexSource;
+			if (PixelSource)
+			{
+				delete PixelSource;
+			}
+
+			if (VertexSource)
+			{
+				delete VertexSource;
+			}
 		}
 	}
 
@@ -207,11 +299,18 @@ namespace Avalon
 			XMMATRIX TranslateMatrix = XMMatrixTranslation(Transform.Position.x, Transform.Position.y, 0.0f);
 			XMMATRIX RotateMatrix = XMMatrixRotationZ(Transform.Rotation);
 			XMMATRIX ScaleMatrix = XMMatrixScaling(Transform.Scale.x, Transform.Scale.y, 1.0f);
-			XMMATRIX WorldMatrix = TranslateMatrix * RotateMatrix * ScaleMatrix;
-			XMMATRIX TransformMatrix = ProjectionMatrix * ViewMatrix * WorldMatrix;
+			XMMATRIX WorldMatrix = ScaleMatrix * RotateMatrix * TranslateMatrix;
+			XMMATRIX TransformMatrix = WorldMatrix * ViewMatrix * ProjectionMatrix;
 
 			// Update Transform Buffer
 			DeviceContext->UpdateSubresource(TransformBuffer.Get(), 0, 0, &TransformMatrix, 0, 0);
+
+			// Send Diffuse Texture To Pixel Shader
+			DeviceContext->PSSetShaderResources(0, 1, Component->GetMaterial()->GetDiffuse()->GetTextureAddressOf());
+
+			// Set States
+			DeviceContext->PSSetSamplers(0, 1, SamplerState.GetAddressOf());
+			DeviceContext->OMSetBlendState(BlendState.Get(), 0, 0xFFFFFFFF);
 			
 			// Draw
 			DeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);

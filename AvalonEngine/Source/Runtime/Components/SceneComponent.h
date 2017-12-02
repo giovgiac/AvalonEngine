@@ -28,6 +28,12 @@ namespace Avalon
 
 		STransform GetComponentTransform(void) const;
 
+		void SetComponentPosition(const XMFLOAT2 InPosition);
+
+		void SetComponentRotation(const float InRotation);
+
+		void SetComponentScale(const XMFLOAT2 InScale);
+
 		void SetComponentTransform(const STransform InTransform);
 	};
 }

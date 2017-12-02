@@ -16,6 +16,11 @@ namespace Avalon
 		Material = InMaterial;
 	}
 
+	void APrimitiveComponent::UpdateDimensions(void)
+	{
+
+	}
+
 	XMCOLOR APrimitiveComponent::GetColor(void) const
 	{
 		return Color;

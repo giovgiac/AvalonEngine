@@ -37,6 +37,21 @@ namespace Avalon
 		return Transform;
 	}
 
+	void ASceneComponent::SetComponentPosition(const XMFLOAT2 InPosition)
+	{
+		Transform.Position = InPosition;
+	}
+
+	void ASceneComponent::SetComponentRotation(const float InRotation)
+	{
+		Transform.Rotation = InRotation;
+	}
+
+	void ASceneComponent::SetComponentScale(const XMFLOAT2 InScale)
+	{
+		Transform.Scale = InScale;
+	}
+
 	void ASceneComponent::SetComponentTransform(const STransform InTransform)
 	{
 		Transform = InTransform;

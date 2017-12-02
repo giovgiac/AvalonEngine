@@ -36,6 +36,10 @@ namespace Avalon
 
 		void Start(void);
 
+		void SetDiffuse(class ATexture2D* InDiffuse);
+
+		class ATexture2D* GetDiffuse(void) const;
+
 		utf8* GetPixelFilename(void) const;
 
 		utf8* GetVertexFilename(void) const;

@@ -26,6 +26,8 @@ namespace Avalon
 	public:
 		void SetMaterial(class AMaterial* InMaterial);
 
+		virtual void UpdateDimensions(void);
+
 		XMCOLOR GetColor(void) const;
 
 		class AMaterial* GetMaterial(void) const;

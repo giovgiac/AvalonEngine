@@ -47,6 +47,10 @@ namespace Avalon
 		static float Elapsed = 0.0f;
 
 		BeforePlay();
+		for (AActor* Actor : World->GetActors())
+		{
+			Actor->Start();
+		}
 
 		// Reset Timer
 		Timer->Reset();
@@ -58,6 +62,12 @@ namespace Avalon
 
 			World->Draw();
 			Timer->Tick();
+
+			// Tick All Actors
+			for (AActor* Actor : World->GetActors())
+			{
+				Actor->Tick(Timer->GetDeltaTime());
+			}
 
 			// Print FPS every 1 second
 			if (Timer->GetElapsedTime() > Elapsed + 1.0f)

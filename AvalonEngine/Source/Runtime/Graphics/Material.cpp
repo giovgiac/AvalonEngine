@@ -46,7 +46,7 @@ namespace Avalon
 	{
 		if (Diffuse)
 		{
-			// TODO: Diffuse->Destroy();
+			Diffuse->Destroy();
 			delete Diffuse;
 		}
 
@@ -64,6 +64,16 @@ namespace Avalon
 	void AMaterial::Start(void)
 	{
 
+	}
+
+	void AMaterial::SetDiffuse(ATexture2D* InDiffuse)
+	{
+		Diffuse = InDiffuse;
+	}
+
+	ATexture2D* AMaterial::GetDiffuse(void) const
+	{
+		return Diffuse;
 	}
 
 	utf8* AMaterial::GetPixelFilename(void) const

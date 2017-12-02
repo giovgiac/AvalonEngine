@@ -9,6 +9,10 @@
 
 #include <Core/Object.h>
 
+// Windows Direct3D & COM
+#include <d3d11_2.h>
+#include <wrl.h>
+
 namespace Avalon 
 {
 	/**
@@ -20,8 +24,10 @@ namespace Avalon
 	class ATexture2D : public AObject
 	{
 	private:
+		utf16* Filename;
 		uint32 Width;
 		uint32 Height;
+		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> Texture;
 
 	public:
 		/**
@@ -33,6 +39,20 @@ namespace Avalon
 		 *
 		 */
 		explicit ATexture2D(const utf8* InFilename);
+
+		ID3D11ShaderResourceView* GetTexture(void);
+
+		ID3D11ShaderResourceView** GetTextureAddress(void);
+
+		ID3D11ShaderResourceView *const * GetTextureAddressOf(void);
+
+		void Start(void);
+
+		void Destroy(void);
+
+		void UpdateDimensions(void);
+
+		utf16* GetFilename(void) const;
 
 		/**
 		 * ATexture2D GetWidth

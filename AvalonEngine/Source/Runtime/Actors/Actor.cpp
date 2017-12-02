@@ -25,11 +25,24 @@ namespace Avalon
 		STransform NewTransform;
 		NewTransform.Position = XMFLOAT2(0.0f, 0.0f);
 		NewTransform.Rotation = 0.0f;
-		NewTransform.Scale = XMFLOAT2(250.0f, 250.0f);
+		NewTransform.Scale = XMFLOAT2(0.25f, 0.25f);
 
 		ASpriteComponent* SpriteComponent = CreateDefaultSubobject<ASpriteComponent>("Test");
 		SpriteComponent->SetMaterial(TestMaterial);
 		SpriteComponent->SetSprite(GokuTexture);
+		SpriteComponent->SetComponentTransform(NewTransform);
+		Components.push_back(SpriteComponent);
+	}
+
+	AActor::AActor(XMFLOAT2 InPosition, AMaterial* InMaterial)
+	{
+		STransform NewTransform;
+		NewTransform.Position = InPosition;
+		NewTransform.Rotation = 0.0f;
+		NewTransform.Scale = XMFLOAT2(0.25f, 0.25f);
+
+		ASpriteComponent* SpriteComponent = CreateDefaultSubobject<ASpriteComponent>("Test");
+		SpriteComponent->SetMaterial(InMaterial);
 		SpriteComponent->SetComponentTransform(NewTransform);
 		Components.push_back(SpriteComponent);
 	}
@@ -50,7 +63,7 @@ namespace Avalon
 
 	void AActor::Tick(float InDeltaTime)
 	{
-
+		
 	}
 
 	void AActor::SetTransform(STransform InTransform)

@@ -13,9 +13,6 @@ namespace Avalon
 {
 	class ASpriteComponent : public APrimitiveComponent
 	{
-	protected:
-		class ATexture2D* Sprite;
-
 	private:
 		virtual void ConstructObject(void);
 
@@ -23,6 +20,8 @@ namespace Avalon
 		ASpriteComponent(void);
 
 		void SetSprite(class ATexture2D* InSprite);
+
+		virtual void UpdateDimensions(void) override;
 
 		class ATexture2D* GetSprite(void) const;
 	};

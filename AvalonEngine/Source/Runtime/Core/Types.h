@@ -49,7 +49,7 @@ typedef signed long long int int64;
 typedef char utf8;
 
 // The UTF-16 char type
-typedef short int utf16;
+typedef wchar_t utf16;
 
 // The UTF-32 char type
 typedef int utf32;

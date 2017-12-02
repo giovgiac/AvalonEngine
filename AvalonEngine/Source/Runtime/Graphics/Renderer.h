@@ -25,9 +25,11 @@ namespace Avalon {
 		Microsoft::WRL::ComPtr<ID3D11Device1> Device;
 		Microsoft::WRL::ComPtr<ID3D11DeviceContext1> DeviceContext;
 		Microsoft::WRL::ComPtr<ID3D11RenderTargetView> RenderTarget;
+		Microsoft::WRL::ComPtr<ID3D11Buffer> TransformBuffer;
+		Microsoft::WRL::ComPtr<ID3D11SamplerState> SamplerState;
+		Microsoft::WRL::ComPtr<ID3D11BlendState> BlendState;
 		Microsoft::WRL::ComPtr<IDXGIFactory2> Factory;
 		Microsoft::WRL::ComPtr<IDXGISwapChain1> Swapchain;
-		Microsoft::WRL::ComPtr<ID3D11Buffer> TransformBuffer;
 
 	public:
 		/**
@@ -65,5 +67,7 @@ namespace Avalon {
 		void InitializeRenderTarget(void);
 
 		void InitializeTransformBuffer(void);
+
+		void InitializeStates(void);
 	};
 }
