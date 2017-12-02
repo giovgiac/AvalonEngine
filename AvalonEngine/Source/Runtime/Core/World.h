@@ -21,9 +21,7 @@ namespace Avalon
 	{
 	private:
 		TArray<class AActor*> Actors;
-		TArray<struct SRenderable*> Renderables;
-		TArray<uint32> Arrays;
-		TArray<uint32> Buffers;
+		TArray<class APrimitiveComponent*> PrimitiveComponents;
 		class AD3DRenderer* Renderer;
 		class AScene* Scene;
 

@@ -13,12 +13,12 @@ namespace Avalon {
 	/**
 	 * This configuration sets the default vertex shader file to be loaded by the shader.
 	 */
-	static const utf8* DefaultVertexFilename = "Shaders/Default.vert";
+	static const utf8* DefaultVertexFilename = "DefaultVertex.cso";
 
 	/**
 	 * This configuration sets the default fragment shader file to be loaded by the shader.
 	 */
-	static const utf8* DefaultFragmentFilename = "Shaders/Default.frag";
+	static const utf8* DefaultFragmentFilename = "DefaultPixel.cso";
 
 	/**
 	 * This configuration sets the default clipping number for the near of the orthographic projection.

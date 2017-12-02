@@ -36,7 +36,7 @@ namespace Avalon
 
 	void AWorld::Draw(void) 
 	{
-		Renderer->Render(Scene, Renderables);
+		Renderer->Render(Scene, PrimitiveComponents);
 	}
 
 	void AWorld::Start(void)
@@ -72,12 +72,14 @@ namespace Avalon
 
 	void AWorld::AddActor(AActor* InActor)
 	{
-		TArray<APrimitiveComponent*> PrimitiveComponents = InActor->GetComponentsByClass<APrimitiveComponent>();
+		TArray<APrimitiveComponent*> Components = InActor->GetComponentsByClass<APrimitiveComponent>();
 
 		// Buffer Actor Geometry to GPU
-		for (APrimitiveComponent* Component : PrimitiveComponents)
+		for (APrimitiveComponent* Component : Components)
 		{
-			
+			Renderer->LoadPrimitiveComponent(Component);
+
+			PrimitiveComponents.push_back(Component);
 		}
 
 		Actors.push_back(InActor);

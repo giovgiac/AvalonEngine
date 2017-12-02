@@ -11,7 +11,7 @@
 
 namespace Avalon {
 	/**
-	 * ReadFile Function
+	 * ReadShader Function
 	 *
 	 * This function reads a given text file from disk and allocates a buffer to hold it in memory.
 	 *
@@ -19,5 +19,5 @@ namespace Avalon {
 	 * @param uint32* OutLength: The size of the allocated buffer with the contents.
 	 *
 	 */
-	extern utf8* ReadFile(const utf8* InFilename, uint32* OutLength = nullptr);
+	extern TArray<uint8>* ReadShader(const utf8* InFilename);
 }

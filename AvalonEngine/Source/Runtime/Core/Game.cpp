@@ -54,6 +54,8 @@ namespace Avalon
 		// Main Game Loop
 		while (Window->GetShouldClose() == false)
 		{
+			Window->PollMessages();
+
 			World->Draw();
 			Timer->Tick();
 
@@ -63,8 +65,6 @@ namespace Avalon
 				std::cout << "FPS: " << 1.0f / Timer->GetDeltaTime() << std::endl;
 				Elapsed += 1.0f;
 			}
-
-			Window->PollMessages();
 		}
 	}
 

@@ -7,32 +7,25 @@
 
 #include "File.h"
 
-#include <stdio.h>
+#include <fstream>
 
 namespace Avalon {
-	utf8* ReadFile(const utf8* InFilename, uint32* OutLength) {
-		utf8* Buffer;
-		uint32 Size;
-		FILE* File;
+	TArray<uint8>* ReadShader(const utf8* InFilename)
+	{
+		TArray<uint8>* Data = nullptr;
 
-		// Open File
-		fopen_s(&File, InFilename, "rb");
+		std::ifstream ShaderFile(InFilename, std::ios::in | std::ios::binary | std::ios::ate);
+		if (ShaderFile.is_open())
+		{
+			uint64 Length = static_cast<uint64>(ShaderFile.tellg());
 
-		// Determine File Size in Bytes
-		fseek(File, 0, SEEK_END);
-		Size = ftell(File);
+			Data = new TArray<uint8>(Length);
 
-		// Allocate Buffer
-		Buffer = new utf8[Size + 1];
+			ShaderFile.seekg(0, std::ios::beg);
+			ShaderFile.read(reinterpret_cast<char*>(Data->data()), Length);
+			ShaderFile.close();
+		}
 
-		// Copy Contents to Buffer
-		fseek(File, 0, SEEK_SET);
-		fread(Buffer, sizeof(utf8), Size, File);
-		fclose(File);
-
-		if (OutLength)
-			*OutLength = Size;
-		Buffer[Size] = '\0';
-		return Buffer;
+		return Data;
 	}
 }

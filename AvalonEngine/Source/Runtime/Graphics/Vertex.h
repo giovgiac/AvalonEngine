@@ -10,14 +10,16 @@
 #include <DirectXMath.h>
 #include <DirectXPackedVector.h>
 
-namespace Avalon {
+namespace Avalon 
+{
 	/**
 	 * Vertex Struct
 	 *
 	 * This data type is understood by the GPU and contains the properties necessary to draw a vertex.
 	 *
 	 */
-	struct SVertex {
+	struct SVertex 
+	{
 		DirectX::XMFLOAT2 Position;
 		DirectX::PackedVector::XMCOLOR Color;
 		DirectX::XMFLOAT2 TexCoord;

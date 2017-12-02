@@ -14,7 +14,6 @@ namespace Avalon
 	class ASpriteComponent : public APrimitiveComponent
 	{
 	protected:
-		class AMaterial* Material;
 		class ATexture2D* Sprite;
 
 	private:

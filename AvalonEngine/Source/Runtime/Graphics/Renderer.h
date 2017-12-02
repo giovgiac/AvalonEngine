@@ -14,13 +14,6 @@
 #include <wrl.h>
 
 namespace Avalon {
-	struct SRenderable
-	{
-		uint32 Array;
-		uint32 Buffer;
-		class APrimitiveComponent* Component;
-	};
-
 	/**
 	 * AD3DRenderer Class
 	 *
@@ -31,6 +24,8 @@ namespace Avalon {
 	private:
 		Microsoft::WRL::ComPtr<ID3D11Device1> Device;
 		Microsoft::WRL::ComPtr<ID3D11DeviceContext1> DeviceContext;
+		Microsoft::WRL::ComPtr<ID3D11RenderTargetView> RenderTarget;
+		Microsoft::WRL::ComPtr<IDXGIFactory2> Factory;
 		Microsoft::WRL::ComPtr<IDXGISwapChain1> Swapchain;
 
 	public:
@@ -46,6 +41,8 @@ namespace Avalon {
 
 		void Start(void);
 
+		void LoadPrimitiveComponent(class APrimitiveComponent* InComponent);
+
 		/**
 		 * AD3DRenderer Render
 		 *
@@ -55,9 +52,16 @@ namespace Avalon {
 		 * @param const TArray<uint32>& Arrays: The vertex arrays of the objects.
 		 *
 		 */
-		void Render(const class AScene* InScene, const TArray<SRenderable*> InRenderables);
+		void Render(const class AScene* InScene, const TArray<class APrimitiveComponent*>& InComponents);
+
+		void UpdateViewport();
 
 	private:
+		void InitializeDirect3D();
+
+		void InitalizeSwapchain();
+
+		void InitializeRenderTarget();
 
 	};
 }

@@ -12,6 +12,7 @@
 
 #include <Core/World.h>
 
+#include <Graphics/Material.h>
 #include <Graphics/Texture.h>
 
 namespace Avalon
@@ -19,13 +20,15 @@ namespace Avalon
 	AActor::AActor(void)
 	{
 		ATexture2D* GokuTexture = new ATexture2D("goku.png");
+		AMaterial* TestMaterial = new AMaterial();
 		
 		STransform NewTransform;
 		NewTransform.Position = XMFLOAT2(0.0f, 0.0f);
 		NewTransform.Rotation = 0.0f;
-		NewTransform.Scale = XMFLOAT2(0.25f, 0.25f);
+		NewTransform.Scale = XMFLOAT2(1.0f, 1.0f);
 
 		ASpriteComponent* SpriteComponent = CreateDefaultSubobject<ASpriteComponent>("Test");
+		SpriteComponent->SetMaterial(TestMaterial);
 		SpriteComponent->SetSprite(GokuTexture);
 		SpriteComponent->SetComponentTransform(NewTransform);
 		Components.push_back(SpriteComponent);
