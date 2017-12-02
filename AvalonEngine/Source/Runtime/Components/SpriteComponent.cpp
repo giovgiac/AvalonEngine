@@ -36,7 +36,7 @@ namespace Avalon
 		Vertices[5] = { {  1.0f,  1.0f }, Color, { 1.0f, 0.0f } };
 	}
 
-	void ASpriteComponent::SetSprite(ATexture2D* InSprite)
+	void ASpriteComponent::SetSprite(TSharedPtr<ATexture2D> InSprite)
 	{
 		GetMaterial()->SetDiffuse(InSprite);
 	}

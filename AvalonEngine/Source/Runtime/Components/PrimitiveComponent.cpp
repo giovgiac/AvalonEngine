@@ -11,7 +11,7 @@
 
 namespace Avalon
 {
-	void APrimitiveComponent::SetMaterial(AMaterial* InMaterial)
+	void APrimitiveComponent::SetMaterial(TSharedPtr<AMaterial> InMaterial)
 	{
 		Material = InMaterial;
 	}
@@ -20,8 +20,7 @@ namespace Avalon
 	{
 		if (Material)
 		{
-			Material->Destroy();
-			delete Material;
+			Material.reset();
 		}
 	}
 
@@ -37,7 +36,7 @@ namespace Avalon
 
 	AMaterial* APrimitiveComponent::GetMaterial(void) const
 	{
-		return Material;
+		return Material.get();
 	}
 
 	TArray<SVertex>& APrimitiveComponent::GetVertices(void)

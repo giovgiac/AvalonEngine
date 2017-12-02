@@ -9,6 +9,7 @@
 
 // STL Containers
 #include <list>
+#include <memory>
 #include <vector>
 
 // DirectX Collision, Colors & Math Libraries
@@ -61,6 +62,10 @@ using TArray = std::vector<T>;
 // The list type
 template<typename T>
 using TList = std::list<T>;
+
+// The shared pointer type
+template<typename T>
+using TSharedPtr = std::shared_ptr<T>;
 
 // Using DirectX namespace
 using namespace DirectX;

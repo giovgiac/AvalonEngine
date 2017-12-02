@@ -24,7 +24,7 @@ namespace Avalon
 		
 	}
 
-	AMaterial::AMaterial(ATexture2D* InDiffuse)
+	AMaterial::AMaterial(TSharedPtr<ATexture2D> InDiffuse)
 		:
 		Diffuse(InDiffuse),
 		PixelFilename(_strdup(DefaultFragmentFilename)),
@@ -33,7 +33,7 @@ namespace Avalon
 
 	}
 
-	AMaterial::AMaterial(class ATexture2D* InDiffuse, const utf8* InPixelFilename, const utf8* InVertexFilename)
+	AMaterial::AMaterial(TSharedPtr<ATexture2D> InDiffuse, const utf8* InPixelFilename, const utf8* InVertexFilename)
 		:
 		Diffuse(InDiffuse),
 		PixelFilename(_strdup(InPixelFilename)),
@@ -42,12 +42,16 @@ namespace Avalon
 
 	}
 
+	AMaterial::~AMaterial(void)
+	{
+		Destroy();
+	}
+
 	void AMaterial::Destroy(void)
 	{
 		if (Diffuse)
 		{
-			Diffuse->Destroy();
-			delete Diffuse;
+			Diffuse.reset();
 		}
 
 		if (PixelFilename)
@@ -66,14 +70,15 @@ namespace Avalon
 
 	}
 
-	void AMaterial::SetDiffuse(ATexture2D* InDiffuse)
+	void AMaterial::SetDiffuse(TSharedPtr<ATexture2D> InDiffuse)
 	{
 		Diffuse = InDiffuse;
 	}
 
 	ATexture2D* AMaterial::GetDiffuse(void) const
 	{
-		return Diffuse;
+		//return Diffuse;
+		return Diffuse.get();
 	}
 
 	utf8* AMaterial::GetPixelFilename(void) const

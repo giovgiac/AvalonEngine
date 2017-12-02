@@ -19,7 +19,7 @@ namespace Avalon
 	public:
 		ASpriteComponent(void);
 
-		void SetSprite(class ATexture2D* InSprite);
+		void SetSprite(TSharedPtr<class ATexture2D> InSprite);
 
 		virtual void UpdateDimensions(void) override;
 

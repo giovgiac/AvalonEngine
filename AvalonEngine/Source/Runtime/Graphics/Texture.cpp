@@ -17,6 +17,11 @@ namespace Avalon {
 		mbstowcs_s(&Length, Filename, Length + 1, InFilename, Length);
 	}
 
+	ATexture2D::~ATexture2D(void)
+	{
+		Destroy();
+	}
+
 	void ATexture2D::Start(void)
 	{
 
@@ -26,7 +31,7 @@ namespace Avalon {
 	{
 		if (Filename)
 		{
-			delete Filename;
+			delete[] Filename;
 		}
 	}
 

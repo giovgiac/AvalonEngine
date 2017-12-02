@@ -43,6 +43,9 @@ namespace Avalon
 			delete Actor;
 		}
 
+		// Clear Actors Array
+		Actors.clear();
+
 		// Destroy Camera
 		Camera->Destroy();
 		delete Camera;

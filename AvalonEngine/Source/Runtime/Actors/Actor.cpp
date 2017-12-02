@@ -19,22 +19,10 @@ namespace Avalon
 {
 	AActor::AActor(void)
 	{
-		ATexture2D* GokuTexture = new ATexture2D("goku.png");
-		AMaterial* TestMaterial = new AMaterial();
-		
-		STransform NewTransform;
-		NewTransform.Position = XMFLOAT2(0.0f, 0.0f);
-		NewTransform.Rotation = 0.0f;
-		NewTransform.Scale = XMFLOAT2(0.25f, 0.25f);
 
-		ASpriteComponent* SpriteComponent = CreateDefaultSubobject<ASpriteComponent>("Test");
-		SpriteComponent->SetMaterial(TestMaterial);
-		SpriteComponent->SetSprite(GokuTexture);
-		SpriteComponent->SetComponentTransform(NewTransform);
-		Components.push_back(SpriteComponent);
 	}
 
-	AActor::AActor(XMFLOAT2 InPosition, AMaterial* InMaterial)
+	AActor::AActor(XMFLOAT2 InPosition, TSharedPtr<AMaterial> InMaterial)
 	{
 		STransform NewTransform;
 		NewTransform.Position = InPosition;

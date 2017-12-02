@@ -19,12 +19,12 @@ namespace Avalon
 	{
 	protected:
 		TArray<SVertex> Vertices;
-		class AMaterial* Material;
+		TSharedPtr<class AMaterial> Material;
 		XMCOLOR Color;
 		Microsoft::WRL::ComPtr<ID3D11Buffer> VertexBuffer;
 		
 	public:
-		void SetMaterial(class AMaterial* InMaterial);
+		void SetMaterial(TSharedPtr<class AMaterial> InMaterial);
 
 		virtual void Destroy(void) override;
 

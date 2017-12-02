@@ -18,7 +18,7 @@ namespace Avalon
 	class AMaterial : public AObject
 	{
 	private:
-		class ATexture2D* Diffuse;
+		TSharedPtr<class ATexture2D> Diffuse;
 		utf8* PixelFilename;
 		utf8* VertexFilename;
 		Microsoft::WRL::ComPtr<ID3D11InputLayout> InputLayout;
@@ -28,15 +28,17 @@ namespace Avalon
 	public:
 		AMaterial(void);
 
-		AMaterial(class ATexture2D* InDiffuse);
+		AMaterial(TSharedPtr<class ATexture2D> InDiffuse);
 
-		AMaterial(class ATexture2D* InDiffuse, const utf8* InPixelFilename, const utf8* InVertexFilename);
+		AMaterial(TSharedPtr<class ATexture2D> InDiffuse, const utf8* InPixelFilename, const utf8* InVertexFilename);
+
+		~AMaterial(void);
 
 		void Destroy(void);
 
 		void Start(void);
 
-		void SetDiffuse(class ATexture2D* InDiffuse);
+		void SetDiffuse(TSharedPtr<class ATexture2D> InDiffuse);
 
 		class ATexture2D* GetDiffuse(void) const;
 

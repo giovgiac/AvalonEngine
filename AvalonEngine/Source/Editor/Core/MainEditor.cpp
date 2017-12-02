@@ -20,6 +20,8 @@
 #include <Editor/Controls/Textbox.h>
 #include <Editor/Controls/Viewport.h>
 
+#include <iostream>
+
 static Avalon::UMainEditor* MainEditor = nullptr;
 
 LRESULT CALLBACK WinProcedure(HWND InHWND, UINT InMSG, WPARAM InWPARAM, LPARAM InLPARAM)
@@ -57,9 +59,6 @@ namespace Avalon
 
 	void UMainEditor::AddControls(HWND InHWND)
 	{
-		//Viewport = CreateWindow(WC_DIALOG, "Viewport", WS_BORDER | WS_VISIBLE | WS_CHILD, 320, 96, ViewportWidth, ViewportHeight, InHWND, 0, 0, 0);
-		//CreateWindow(WC_STATIC, "Enter Text Here: ", WS_VISIBLE | WS_CHILD | SS_CENTER, 200, 25, 100, 50, InHWND, 0, 0, 0);
-
 		Viewport = new UViewport(this, 0.5f, 0.5f, 640.0f, 480.0f, EAnchorPoint::CENTER);
 		Viewport->ConstructControl(InHWND);
 		Children.push_back(Viewport);
@@ -130,34 +129,31 @@ namespace Avalon
 	void UMainEditor::ProcessMenus(WPARAM InWPARAM)
 	{
 		AScene* NewScene = nullptr;
-		ATexture2D* GokuTexture1 = nullptr;
-		AMaterial* TestMaterial1 = nullptr;
 		AActor* TestActor1 = nullptr;
+		TSharedPtr<ATexture2D> Texture = nullptr;
+		TSharedPtr<AMaterial> Material = nullptr;
 
 		switch (static_cast<EEditorMenu>(InWPARAM))
 		{
 		case EEditorMenu::FILE_MENU_NEW_SCENE:
 			// Create New Scene
-			NewScene = new AScene;
-			World->LoadScene(NewScene);
-			
+			World->LoadScene(new AScene);
 			break;
 		case EEditorMenu::FILE_MENU_OPEN_SCENE:
 			// Create Test Scene
 			NewScene = new AScene;
 
-			// Create Textures
-			GokuTexture1 = new ATexture2D("goku.png");
-
-			// Create Materials
-			TestMaterial1 = new AMaterial();
-			TestMaterial1->SetDiffuse(GokuTexture1);
+			// Create Textures & Materials
+			Texture = std::make_shared<ATexture2D>("goku.png");
+			Material = std::make_shared<AMaterial>();
+			Material->SetDiffuse(Texture);
 
 			// Create Actors
-			TestActor1 = new AActor(XMFLOAT2(000.0f, 000.0f), TestMaterial1);
-
-			// Add To Scene
-			NewScene->AddActor(TestActor1);
+			for (uint32 i = 0; i < 5000; i++)
+			{
+				// Add To Scene
+				NewScene->AddActor(new AActor(XMFLOAT2(rand() % 640 - rand() % 640, rand() % 384 - rand() % 384), Material));
+			}
 
 			// Load Scene
 			World->LoadScene(NewScene);
@@ -170,7 +166,6 @@ namespace Avalon
 
 	void UMainEditor::Destroy(void)
 	{
-		//DestroyWindow(static_cast<HWND>(Handle));
 		DestroyControl();
 		delete Title;
 	}
@@ -259,6 +254,8 @@ namespace Avalon
 
 	void UMainEditor::Run(void)
 	{
+		static float Elapsed = 0.0f;
+
 		Timer->Reset();
 
 		// Editor Loop
@@ -267,6 +264,13 @@ namespace Avalon
 			PollMessages();
 			Timer->Tick();
 			World->Draw();
+
+			// Print FPS every 1 second
+			if (Timer->GetElapsedTime() > Elapsed + 1.0f)
+			{
+				std::cout << "FPS: " <<  1.0f / Timer->GetDeltaTime() << std::endl;
+				Elapsed += 1.0f;
+			}
 		}
 	}
 

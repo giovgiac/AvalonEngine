@@ -24,7 +24,7 @@ namespace Avalon
 	public:
 		AActor(void);
 
-		AActor(XMFLOAT2 InPosition, class AMaterial* InMaterial);
+		AActor(XMFLOAT2 InPosition, TSharedPtr<class AMaterial> InMaterial);
 
 		virtual void Destroy(void);
 

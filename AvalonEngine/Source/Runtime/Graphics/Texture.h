@@ -40,6 +40,8 @@ namespace Avalon
 		 */
 		explicit ATexture2D(const utf8* InFilename);
 
+		~ATexture2D(void);
+
 		ID3D11ShaderResourceView* GetTexture(void);
 
 		ID3D11ShaderResourceView** GetTextureAddress(void);
